@@ -1,0 +1,80 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "GlueJobRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "GlueJobExecutionRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": ["glue.amazonaws.com"]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "GlueJobPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:ListBucket"
+                  ],
+                  "Resource": [
+                    "arn:aws:s3:::backup-data-1-data/*",
+                    "arn:aws:s3:::test-lifecyclepolicy-bucket-delete/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "sns:Publish",
+                  "Resource": "arn:aws:sns:us-east-1:423623831602:Glue-Job-Notification"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "GlueJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+        "Name": "daily_incremental_load_job",
+        "Role": { "Fn::GetAtt": ["GlueJobRole", "Arn"] },
+        "Command": {
+          "Name": "glueetl",
+          "ScriptLocation": "s3://your-script-bucket/glue-job-script.py",
+          "PythonVersion": "3"
+        },
+        "DefaultArguments": {
+          "--job-language": "python"
+        },
+        "GlueVersion": "3.0",
+        "MaxCapacity": 2.0
+      }
+    },
+    "GlueJobTrigger": {
+      "Type": "AWS::Glue::Trigger",
+      "Properties": {
+        "Name": "DailyIncrementalTrigger",
+        "Type": "SCHEDULED",
+        "Schedule": "cron(0 6 * * ? *)",
+        "Actions": [
+          {
+            "JobName": { "Ref": "GlueJob" }
+          }
+        ]
+      }
+    }
+  }
+}
