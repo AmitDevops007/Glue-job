@@ -49,12 +49,12 @@ Upload files to s3://backup-data-1-data/ and wait for the scheduled run.
 SNS will notify the job status.
 
 Tech Stack
->>AWS Glue
->>AWS S3
->>AWS SNS
->>AWS CloudFormation
->>S3 Life cycle
->>Python
+1.AWS Glue
+2.AWS S3
+3.AWS SNS
+4.AWS CloudFormation
+5.S3 Life cycle
+6.Python
 
 Author:
 Amit Raj
