@@ -1,67 +1,68 @@
-AWS Glue Job with CloudFormation and SNS Notification
+# AWS Glue Job with S3 Lifecycle Policy, SNS Notification, and S3 Inventory
 
-Project Overview
+## Project Overview
+This project demonstrates how to set up an **AWS Glue Job** for daily incremental data load from one S3 bucket to another. It leverages **SNS notifications** for job status alerts, **S3 Lifecycle Policies** to manage object versions automatically, and **S3 Inventory** with **Athena** for auditing object activities.
 
-This project demonstrates how to set up an AWS Glue Job for daily incremental data load from one S3 bucket to another, 
-using AWS CloudFormation for infrastructure automation and SNS notifications for job status alerts.
+### 🔥 Key Features
+- Automated **AWS Glue ETL Job** for daily incremental data load.
+- Data movement from **`s3://backup-data-1-data/`** to **`s3://test-lifecyclepolicy-bucket-delete/Data/Data1/`**.
+- **SNS notifications** for job completion status.
+- **Scheduled Triggers** at **6 AM** and **4 PM (UTC)** daily.
+- **S3 Lifecycle Policy** to automatically delete expired versions and retain **2 latest versions**.
+- **S3 Inventory Setup** to track object activities.
+- **Athena Integration** to query inventory data.
 
-Features Implemented😎:
-1>AWS Glue ETL Job for daily incremental data load
-2>Data movement from s3://backup-data-1-data/ to s3://test-lifecyclepolicy-bucket-delete/Data/Data1/
-3>SNS notifications to send job success notifications
-4>CloudFormation template for automated infrastructure setup
-5>Scheduled trigger at 6 AM  and 4 PM (UTC) daily using Glue Trigger
-6> Added a lifecycle policy in bucket s3://test-lifecyclepolicy-bucket-delete to delete versioned file and retrive 2 versions
-
-Folder Structure:
+---
+## Folder Structure
 
 Glue-job/
 ├─ scripts/
 │   └─ glue_job_script.py       # Glue Job ETL Script
-├─ templates/
-│   └─ cloudformation_template.json # CloudFormation Template
 └─ README.md                  # Documentation
 
+---
+## How to Deploy
 
-How to Deploy
-1. Clone the Repository
+### 1. Clone the Repository
+```bash
 git clone https://github.com/AmitDevops007/Glue-job.git
 cd Glue-job
+```
+### 2. Upload Script to S3
+Upload **`glue_job_script.py`** to your S3 bucket path where AWS Glue will fetch the script.
 
-2. Upload Script to S3
-Upload glue_job_script.py into your S3 bucket where AWS Glue will pick the script from.
+### 3. Verify Glue Job
+- Navigate to **AWS Glue Console**.
+- Confirm the creation of the **`daily_incremental_load_job`** job.
+- Check if the **scheduled triggers** are set for **6 AM** and **4 PM (UTC)**.
 
-3. Deploy CloudFormation Stack
-Use AWS CLI or AWS Console to deploy the CloudFormation template:
+### 4. Setup S3 Inventory
+- Enable **S3 Inventory** on the target bucket.
+- Configure the inventory to generate reports in CSV format.
 
-aws cloudformation create-stack \
-  --stack-name GlueJobStack \
-  --template-body file://templates/cloudformation_template.json \
-  --capabilities CAPABILITY_NAMED_IAM
+### 5. Run Glue Crawler
+- Configure AWS Glue Crawler to read **S3 Inventory Reports**.
+- Use **AWS Glue Classifier** to parse CSV files.
+- Create a table in **Athena** to query the inventory data.
 
-4. Verify Glue Job
-Go to AWS Glue Console
-Check if the job daily_incremental_load_job is created
-Verify the trigger schedule
-5. Testing SNS Notification
+### 6. Testing SNS Notification
+- Upload files to **`s3://backup-data-1-data/`**.
+- Wait for the scheduled Glue job execution.
+- You will receive an **SNS notification** with the job execution summary.
+- Use Athena to query inventory changes.
 
-Upload files to s3://backup-data-1-data/ and wait for the scheduled run.
-SNS will notify the job status.
+---
+## Tech Stack
+- AWS Glue
+- AWS S3
+- AWS SNS
+- S3 Lifecycle Policies
+- S3 Inventory
+- AWS Athena
+- Python
 
-Tech Stack
-1.AWS Glue
-2.AWS S3
-3.AWS SNS
-4.AWS CloudFormation
-5.S3 Life cycle
-6.Python
+---
+## Author
+**Amit Raj**
 
-Author:
-Amit Raj
-
-License:
-This project is licensed under the MIT License.
-
-
-In future will add more features
 
