@@ -10,6 +10,8 @@ This project demonstrates how to set up an **AWS Glue Job** for daily incrementa
 - **Scheduled Triggers** at **6 AM** and **4 PM (UTC)** daily.
 - **S3 Lifecycle Policy** to automatically delete expired versions and retain **2 latest versions**.
 - **S3 Inventory Setup** to track object activities.
+- **DB and Crawler Creeation** to create a table in glue catalog.
+- **Glue Catalog** to define the schema table
 - **Athena Integration** to query inventory data.
 
 ---
@@ -58,6 +60,8 @@ Upload **`glue_job_script.py`** to your S3 bucket path where AWS Glue will fetch
 - AWS SNS
 - S3 Lifecycle Policies
 - S3 Inventory
+- AWS Crawler
+- AWS Glue Catalog
 - AWS Athena
 - Python
 
